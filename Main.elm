@@ -9,13 +9,15 @@ import String
 -- INIT
 
 
-initModel : Model
-initModel =
-    { players = []
-    , input = ""
-    , playerId = Nothing
-    , plays = []
-    }
+init : ( Model, Cmd Msg )
+init =
+    ( { players = []
+      , input = ""
+      , playerId = Nothing
+      , plays = []
+      }
+    , Cmd.none
+    )
 
 
 type alias Model =
@@ -93,18 +95,12 @@ totalSection model =
 
 playersListSection : Model -> Html Msg
 playersListSection model =
-    div
-        []
-        [ renderPlayers model.players
-        ]
+    div [] [ renderPlayers model.players ]
 
 
 playsSection : Model -> Html Msg
 playsSection model =
-    div
-        []
-        [ renderPlays model.plays
-        ]
+    div [] [ renderPlays model.plays ]
 
 
 headerSection : Model -> Html Msg
@@ -170,29 +166,29 @@ type Msg
     | Score Player Int
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Input name ->
-            { model | input = name }
+            ( { model | input = name }, Cmd.none )
 
         Cancel ->
-            { model | input = "", playerId = Nothing }
+            ( { model | input = "", playerId = Nothing }, Cmd.none )
 
         Save ->
             if (String.isEmpty model.input) then
-                model
+                ( model, Cmd.none )
             else
-                savePlayer model
+                ( savePlayer model, Cmd.none )
 
         Score player points ->
-            score model player points
+            ( score model player points, Cmd.none )
 
         Delete p ->
-            deletePlay model p
+            ( deletePlay model p, Cmd.none )
 
         Edit player ->
-            { model | input = player.name, playerId = Just player.id }
+            ( { model | input = player.name, playerId = Just player.id }, Cmd.none )
 
 
 deletePlay : Model -> Play -> Model
@@ -286,10 +282,19 @@ newPlayerId players =
     List.length players
 
 
-main : Program Never Model Msg
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
 main =
-    Html.beginnerProgram
-        { model = initModel
+    Html.program
+        { init = init
         , view = view
         , update = update
+        , subscriptions = subscriptions
         }
