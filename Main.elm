@@ -64,6 +64,7 @@ formSection model =
         [ input
             [ type_ "text"
             , value model.input
+            , autofocus True
             , onInput Input
             , placeholder "Player Name"
             ]
@@ -100,7 +101,7 @@ totalSection model =
 
 playersListSection : Model -> Html Msg
 playersListSection model =
-    div [] [ renderPlayers model.players ]
+    div [] [ renderPlayers (List.sortBy .name (model.players)) ]
 
 
 playsSection : Model -> Html Msg
