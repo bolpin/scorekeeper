@@ -88,8 +88,13 @@ totalSection model =
                 |> List.sum
     in
         footer []
-            [ div [] [ text "Total:" ]
-            , div [] [ text (toString total) ]
+            [ div
+                [ style
+                    [ ( "color", "green" )
+                    , ( "font-size", "150%" )
+                    ]
+                ]
+                [ text ("Score: " ++ (toString total)) ]
             ]
 
 
@@ -107,7 +112,7 @@ headerSection : Model -> Html Msg
 headerSection model =
     header
         [ class "main-header" ]
-        [ h1 [] [ text "Score Keeper" ]
+        [ h1 [] [ text "Basketball Score Keeper" ]
         ]
 
 
@@ -122,7 +127,7 @@ renderPlayers players =
     players
         |> List.sortBy .name
         |> List.map player
-        |> ul []
+        |> ul [ style [ ( "list-style-type", "none" ) ] ]
 
 
 play : Play -> Html Msg
@@ -132,8 +137,6 @@ play play =
             play.playerName ++ ": " ++ (toString play.points)
     in
         li []
-            -- [ span [] [ a [ onClick Delete ] [ text "Delete" ] ]
-            -- ,
             [ span [] [ text playDescription ]
             ]
 
@@ -141,13 +144,20 @@ play play =
 player : Player -> Html Msg
 player player =
     li []
-        [ a
+        [ button
             [ class "edit"
             , onClick (Edit player)
             ]
-            [ text "Edit" ]
-        , div []
+            [ text "Edit Name" ]
+        , span
+            [ style
+                [ ( "display", "inline-block" )
+                , ( "width", "10em" )
+                , ( "padding", "5px" )
+                ]
+            ]
             [ text player.name ]
+        , button [ type_ "button", onClick (Score player 1) ] [ text "Free Throw" ]
         , button [ type_ "button", onClick (Score player 2) ] [ text "2 pt" ]
         , button [ type_ "button", onClick (Score player 3) ] [ text "3 pt" ]
         ]
@@ -286,15 +296,10 @@ newPlayerId players =
 -- SUBSCRIPTIONS
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
-
-
 main =
     Html.program
         { init = init
         , view = view
         , update = update
-        , subscriptions = subscriptions
+        , subscriptions = \_ -> Sub.none
         }
